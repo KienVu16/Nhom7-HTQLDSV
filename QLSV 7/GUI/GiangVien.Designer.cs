@@ -89,7 +89,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.label2.Location = new System.Drawing.Point(90, 0);
+            this.label2.Location = new System.Drawing.Point(116, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(84, 36);
             this.label2.TabIndex = 0;
@@ -100,15 +100,15 @@
             // txtMaGV
             // 
             this.txtMaGV.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtMaGV.Location = new System.Drawing.Point(180, 3);
+            this.txtMaGV.Location = new System.Drawing.Point(206, 3);
             this.txtMaGV.Multiline = true;
             this.txtMaGV.Name = "txtMaGV";
-            this.txtMaGV.Size = new System.Drawing.Size(117, 30);
+            this.txtMaGV.Size = new System.Drawing.Size(197, 30);
             this.txtMaGV.TabIndex = 1;
             // 
             // txtTen
             // 
-            this.txtTen.Location = new System.Drawing.Point(686, 3);
+            this.txtTen.Location = new System.Drawing.Point(1018, 3);
             this.txtTen.Multiline = true;
             this.txtTen.Name = "txtTen";
             this.txtTen.Size = new System.Drawing.Size(77, 30);
@@ -116,7 +116,7 @@
             // 
             // txtKhoa
             // 
-            this.txtKhoa.Location = new System.Drawing.Point(180, 39);
+            this.txtKhoa.Location = new System.Drawing.Point(206, 39);
             this.txtKhoa.Multiline = true;
             this.txtKhoa.Name = "txtKhoa";
             this.txtKhoa.Size = new System.Drawing.Size(92, 30);
@@ -125,15 +125,15 @@
             // tableLayoutPanel3
             // 
             this.tableLayoutPanel3.ColumnCount = 9;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45.34413F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 31.57895F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 127F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 164F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 92F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 126F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.07692F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 199F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 11.11111F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 8.738395F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 13.65374F));
             this.tableLayoutPanel3.Controls.Add(this.txtHo, 3, 0);
             this.tableLayoutPanel3.Controls.Add(this.label3, 2, 0);
             this.tableLayoutPanel3.Controls.Add(this.label2, 0, 0);
@@ -147,19 +147,19 @@
             this.tableLayoutPanel3.Controls.Add(this.txtEmail, 5, 1);
             this.tableLayoutPanel3.Controls.Add(this.label8, 4, 1);
             this.tableLayoutPanel3.Controls.Add(this.label4, 6, 1);
-            this.tableLayoutPanel3.Controls.Add(this.txtGhiChu, 8, 1);
+            this.tableLayoutPanel3.Controls.Add(this.txtGhiChu, 7, 1);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 83);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(1100, 91);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(1831, 91);
             this.tableLayoutPanel3.TabIndex = 5;
             // 
             // txtHo
             // 
-            this.txtHo.Location = new System.Drawing.Point(430, 3);
+            this.txtHo.Location = new System.Drawing.Point(612, 3);
             this.txtHo.Name = "txtHo";
             this.txtHo.Size = new System.Drawing.Size(158, 30);
             this.txtHo.TabIndex = 32;
@@ -168,9 +168,9 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label3.Location = new System.Drawing.Point(303, 0);
+            this.label3.Location = new System.Drawing.Point(409, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(121, 36);
+            this.label3.Size = new System.Drawing.Size(197, 36);
             this.label3.TabIndex = 31;
             this.label3.Text = "Họ :";
             this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -179,9 +179,9 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label5.Location = new System.Drawing.Point(303, 36);
+            this.label5.Location = new System.Drawing.Point(409, 36);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(121, 55);
+            this.label5.Size = new System.Drawing.Size(197, 55);
             this.label5.TabIndex = 24;
             this.label5.Text = "Số Điện thoại";
             this.label5.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -192,7 +192,7 @@
             this.label6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label6.Location = new System.Drawing.Point(3, 36);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(171, 55);
+            this.label6.Size = new System.Drawing.Size(197, 55);
             this.label6.TabIndex = 25;
             this.label6.Text = "Khoa :";
             this.label6.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -201,9 +201,9 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label7.Location = new System.Drawing.Point(594, 0);
+            this.label7.Location = new System.Drawing.Point(815, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(86, 36);
+            this.label7.Size = new System.Drawing.Size(197, 36);
             this.label7.TabIndex = 28;
             this.label7.Text = "Tên :";
             this.label7.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -211,7 +211,7 @@
             // 
             // txtSoDienThoai
             // 
-            this.txtSoDienThoai.Location = new System.Drawing.Point(430, 39);
+            this.txtSoDienThoai.Location = new System.Drawing.Point(612, 39);
             this.txtSoDienThoai.Multiline = true;
             this.txtSoDienThoai.Name = "txtSoDienThoai";
             this.txtSoDienThoai.Size = new System.Drawing.Size(158, 30);
@@ -219,7 +219,7 @@
             // 
             // txtEmail
             // 
-            this.txtEmail.Location = new System.Drawing.Point(686, 39);
+            this.txtEmail.Location = new System.Drawing.Point(1018, 39);
             this.txtEmail.Multiline = true;
             this.txtEmail.Name = "txtEmail";
             this.txtEmail.Size = new System.Drawing.Size(120, 30);
@@ -229,7 +229,7 @@
             // 
             this.label8.AutoSize = true;
             this.label8.Dock = System.Windows.Forms.DockStyle.Right;
-            this.label8.Location = new System.Drawing.Point(612, 36);
+            this.label8.Location = new System.Drawing.Point(944, 36);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(68, 55);
             this.label8.TabIndex = 34;
@@ -240,7 +240,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Dock = System.Windows.Forms.DockStyle.Right;
-            this.label4.Location = new System.Drawing.Point(813, 36);
+            this.label4.Location = new System.Drawing.Point(1335, 36);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(83, 55);
             this.label4.TabIndex = 35;
@@ -249,7 +249,7 @@
             // 
             // txtGhiChu
             // 
-            this.txtGhiChu.Location = new System.Drawing.Point(902, 39);
+            this.txtGhiChu.Location = new System.Drawing.Point(1424, 39);
             this.txtGhiChu.Name = "txtGhiChu";
             this.txtGhiChu.Size = new System.Drawing.Size(151, 30);
             this.txtGhiChu.TabIndex = 36;
@@ -269,7 +269,7 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 83F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 83F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(1100, 83);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1831, 83);
             this.tableLayoutPanel2.TabIndex = 4;
             // 
             // label12
@@ -278,10 +278,10 @@
             this.label12.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label12.Font = new System.Drawing.Font("Times New Roman", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label12.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.label12.Location = new System.Drawing.Point(370, 0);
+            this.label12.Location = new System.Drawing.Point(614, 0);
             this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(358, 83);
+            this.label12.Size = new System.Drawing.Size(602, 83);
             this.label12.TabIndex = 0;
             this.label12.Text = "Quản lý giáo viên";
             this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -304,7 +304,7 @@
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 1;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(1100, 43);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(1831, 43);
             this.tableLayoutPanel4.TabIndex = 6;
             // 
             // btnThem
@@ -312,7 +312,7 @@
             this.btnThem.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnThem.Location = new System.Drawing.Point(3, 3);
             this.btnThem.Name = "btnThem";
-            this.btnThem.Size = new System.Drawing.Size(214, 37);
+            this.btnThem.Size = new System.Drawing.Size(360, 37);
             this.btnThem.TabIndex = 5;
             this.btnThem.Text = "Thêm";
             this.btnThem.UseVisualStyleBackColor = true;
@@ -320,9 +320,9 @@
             // btnSua
             // 
             this.btnSua.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnSua.Location = new System.Drawing.Point(223, 3);
+            this.btnSua.Location = new System.Drawing.Point(369, 3);
             this.btnSua.Name = "btnSua";
-            this.btnSua.Size = new System.Drawing.Size(214, 37);
+            this.btnSua.Size = new System.Drawing.Size(360, 37);
             this.btnSua.TabIndex = 6;
             this.btnSua.Text = "Sửa";
             this.btnSua.UseVisualStyleBackColor = true;
@@ -331,9 +331,9 @@
             // btnXoa
             // 
             this.btnXoa.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnXoa.Location = new System.Drawing.Point(443, 3);
+            this.btnXoa.Location = new System.Drawing.Point(735, 3);
             this.btnXoa.Name = "btnXoa";
-            this.btnXoa.Size = new System.Drawing.Size(214, 37);
+            this.btnXoa.Size = new System.Drawing.Size(360, 37);
             this.btnXoa.TabIndex = 7;
             this.btnXoa.Text = "Xóa";
             this.btnXoa.UseVisualStyleBackColor = true;
@@ -342,9 +342,9 @@
             // btnXuatFile
             // 
             this.btnXuatFile.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnXuatFile.Location = new System.Drawing.Point(663, 3);
+            this.btnXuatFile.Location = new System.Drawing.Point(1101, 3);
             this.btnXuatFile.Name = "btnXuatFile";
-            this.btnXuatFile.Size = new System.Drawing.Size(214, 37);
+            this.btnXuatFile.Size = new System.Drawing.Size(360, 37);
             this.btnXuatFile.TabIndex = 8;
             this.btnXuatFile.Text = "Xuất file";
             this.btnXuatFile.UseVisualStyleBackColor = true;
@@ -353,9 +353,9 @@
             // btnThoat
             // 
             this.btnThoat.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnThoat.Location = new System.Drawing.Point(883, 3);
+            this.btnThoat.Location = new System.Drawing.Point(1467, 3);
             this.btnThoat.Name = "btnThoat";
-            this.btnThoat.Size = new System.Drawing.Size(214, 37);
+            this.btnThoat.Size = new System.Drawing.Size(361, 37);
             this.btnThoat.TabIndex = 9;
             this.btnThoat.Text = "Thoát";
             this.btnThoat.UseVisualStyleBackColor = true;
@@ -379,7 +379,7 @@
             this.dgvGiangVien.Name = "dgvGiangVien";
             this.dgvGiangVien.RowHeadersWidth = 51;
             this.dgvGiangVien.RowTemplate.Height = 24;
-            this.dgvGiangVien.Size = new System.Drawing.Size(1100, 402);
+            this.dgvGiangVien.Size = new System.Drawing.Size(1831, 402);
             this.dgvGiangVien.TabIndex = 7;
             // 
             // MaGV
@@ -445,7 +445,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 22F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1100, 619);
+            this.ClientSize = new System.Drawing.Size(1831, 619);
             this.Controls.Add(this.dgvGiangVien);
             this.Controls.Add(this.tableLayoutPanel4);
             this.Controls.Add(this.tableLayoutPanel3);

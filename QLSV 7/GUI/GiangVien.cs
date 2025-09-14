@@ -12,19 +12,24 @@ using System.IO;
 
 namespace QLSV_7.GUI
 {
+    /// <summary>
+    /// Form quản lý giảng viên
+    /// Cho phép thêm, sửa, xóa, hiển thị và xuất dữ liệu giảng viên
+    /// </summary>
     public partial class GiangVien : Form
     {
+        /// <summary>
+        /// Khởi tạo form GiangVien
+        /// Gọi InitializeComponent() để khởi tạo các control trên form
+        /// </summary>
         public GiangVien()
         {
             InitializeComponent();
         }
-        string Nguon = @"Data Source=DESKTOP-5LSPDHV\SQLEXPRESS01;Initial Catalog=QLSV;Integrated Security=True";
-        string Lenh = @"";
-        SqlConnection KetNoi;
-        SqlCommand ThucHien;
-        SqlDataReader DocDuLieu;
-
         
+
+        string Nguon = @"Data Source=DESKTOP-5LSPDHV\SQLEXPRESS01;Initial Catalog=QLSV;Integrated Security=True";
+        String Lenh = "@";
         void HienThi()
         {
             // Gỡ DataSource để được phép dùng Rows.Add
@@ -33,6 +38,7 @@ namespace QLSV_7.GUI
 
             try
             {
+                // Kết nối database và thực hiện truy vấn SELECT
                 using (var conn = new SqlConnection(Nguon))
                 using (var cmd = new SqlCommand(@"SELECT 
                                                         MaGV,
@@ -47,6 +53,7 @@ namespace QLSV_7.GUI
                     conn.Open();
                     using (var reader = cmd.ExecuteReader())
                     {
+                        // Đọc từng dòng dữ liệu và thêm vào DataGridView
                         while (reader.Read())
                         {
                             int index = dgvGiangVien.Rows.Add();
@@ -63,18 +70,25 @@ namespace QLSV_7.GUI
             }
             catch (Exception ex)
             {
+                // Hiển thị thông báo lỗi nếu có lỗi xảy ra khi load dữ liệu
                 MessageBox.Show("Lỗi khi hiển thị dữ liệu: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        /// <summary>
+        /// Sự kiện Load của form GiangVien
+        /// Khởi tạo dữ liệu và đăng ký các event handler
+        /// </summary>
+        /// <param name="e">Tham số sự kiện</param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
             try
             {
-                HienThi();
+                HienThi(); // Hiển thị dữ liệu giảng viên
             }
-            catch { }
+            catch { } // Bỏ qua lỗi nếu có
 
+            // Đăng ký các event handler
             btnThem.Click += btnThem_Click;
             btnSua.Click += btnSua_Click;
             btnXoa.Click += btnXoa_Click;
@@ -82,9 +96,15 @@ namespace QLSV_7.GUI
             btnThoat.Click += btnThoat_Click;
             dgvGiangVien.CellClick += dgvGiangVien_CellClick;
         }
+        /// <summary>
+        /// Xử lý sự kiện click nút Thêm
+        /// Thêm một bản ghi giảng viên mới vào database
+        /// </summary>
+        /// <param name="sender">Nút Thêm</param>
+        /// <param name="e">Tham số sự kiện</param>
         private void btnThem_Click(object sender, EventArgs e)
         {
-            // Validate bắt buộc theo schema
+            // Validate bắt buộc theo schema - kiểm tra các trường bắt buộc
             if (string.IsNullOrWhiteSpace(txtMaGV.Text))
             {
                 MessageBox.Show("Vui lòng nhập Mã GV.", "Thiếu thông tin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -116,6 +136,7 @@ namespace QLSV_7.GUI
                 return;
             }
 
+            // Câu lệnh SQL để thêm dữ liệu giảng viên mới
             const string insertSql = @"INSERT INTO GiangVien
                                                 (MaGV, Ho, Ten, Email, SoDienThoai, Khoa, GhiChu)
                                                 VALUES (@MaGV, @Ho, @Ten, @Email, @SoDienThoai, @Khoa, @GhiChu)";
@@ -138,8 +159,10 @@ namespace QLSV_7.GUI
                         }
                     }
 
+                    // Thực hiện thêm dữ liệu giảng viên mới
                     using (var cmd = new SqlCommand(insertSql, conn))
                     {
+                        // Thêm các tham số vào câu lệnh SQL
                         cmd.Parameters.Add("@MaGV", SqlDbType.NVarChar, 50).Value = (txtMaGV.Text ?? string.Empty).Trim();
                         cmd.Parameters.Add("@Ho", SqlDbType.NVarChar, 50).Value = (txtHo.Text ?? string.Empty).Trim();
                         cmd.Parameters.Add("@Ten", SqlDbType.NVarChar, 50).Value = (txtTen.Text ?? string.Empty).Trim();
@@ -148,14 +171,15 @@ namespace QLSV_7.GUI
                         cmd.Parameters.Add("@Khoa", SqlDbType.NVarChar, 255).Value = (txtKhoa.Text ?? string.Empty).Trim();
                         cmd.Parameters.Add("@GhiChu", SqlDbType.NVarChar, 255).Value = (txtGhiChu.Text ?? string.Empty).Trim();
 
-                        cmd.ExecuteNonQuery();
+                        cmd.ExecuteNonQuery(); // Thực thi câu lệnh INSERT
                     }
                 }
 
+                // Thông báo thành công và cập nhật giao diện
                 MessageBox.Show("Thêm giảng viên thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                HienThi();
+                HienThi(); // Load lại dữ liệu
 
-                // Clear form
+                // Xóa form để nhập dữ liệu mới
                 txtMaGV.Clear();
                 txtHo.Clear();
                 txtTen.Clear();
@@ -166,11 +190,13 @@ namespace QLSV_7.GUI
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
-                MessageBox.Show("Mã SV đã tồn tại. Vui lòng nhập mã khác.", "Trùng khóa", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                // Xử lý lỗi trùng khóa chính
+                MessageBox.Show("Mã GV đã tồn tại. Vui lòng nhập mã khác.", "Trùng khóa", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi thêm sinh viên: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // Xử lý các lỗi khác
+                MessageBox.Show("Lỗi khi thêm giảng viên: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -324,71 +350,7 @@ namespace QLSV_7.GUI
             }
         }
 
-        private void btnXuatFile_Click(object sender, EventArgs e)
-        {
-            if (dgvGiangVien.Rows.Count == 0)
-            {
-                MessageBox.Show("Không có dữ liệu để xuất.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            using (var sfd = new SaveFileDialog())
-            {
-                sfd.Title = "Xuất dữ liệu giảng viên";
-                sfd.Filter = "CSV (Excel)|*.csv";
-                sfd.FileName = "GiangVien.csv";
-                if (sfd.ShowDialog() != DialogResult.OK)
-                {
-                    return;
-                }
-
-                try
-                {
-                    var sb = new StringBuilder();
-
-                    // Header
-                    for (int c = 0; c < dgvGiangVien.Columns.Count; c++)
-                    {
-                        if (c > 0) sb.Append(',');
-                        sb.Append(EscapeCsv(dgvGiangVien.Columns[c].HeaderText));
-                    }
-                    sb.AppendLine();
-
-                    // Rows
-                    foreach (DataGridViewRow row in dgvGiangVien.Rows)
-                    {
-                        if (row.IsNewRow) continue;
-                        for (int c = 0; c < dgvGiangVien.Columns.Count; c++)
-                        {
-                            if (c > 0) sb.Append(',');
-                            var value = row.Cells[c].Value?.ToString() ?? string.Empty;
-                            sb.Append(EscapeCsv(value));
-                        }
-                        sb.AppendLine();
-                    }
-
-                    // Write UTF-8 with BOM so Excel reads Vietnamese correctly
-                    var utf8WithBom = new UTF8Encoding(true);
-                    File.WriteAllText(sfd.FileName, sb.ToString(), utf8WithBom);
-
-                    MessageBox.Show("Xuất file thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Lỗi khi xuất file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-        }
-
-        private static string EscapeCsv(string input)
-        {
-            if (input.IndexOfAny(new[] { ',', '"', '\n', '\r' }) >= 0)
-            {
-                return '"' + input.Replace("\"", "\"\"") + '"';
-            }
-            return input;
-        }
-
+        
         private void btnThoat_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -441,5 +403,90 @@ namespace QLSV_7.GUI
         {
 
         }
+
+        private void btnXuatFile_Click(object sender, EventArgs e)
+        {
+            if (dgvGiangVien.Rows.Count > 0)
+            {
+                using (SaveFileDialog sfd = new SaveFileDialog() { Filter = "CSV file|*.csv" })
+                {
+                    if (sfd.ShowDialog() == DialogResult.OK)
+                    {
+                        try
+                        {
+                            using (StreamWriter sw = new StreamWriter(sfd.FileName, false, Encoding.UTF8))
+                            {
+                                // ===== Thêm tiêu đề =====
+                                sw.WriteLine("DANH SÁCH SINH VIÊN");
+
+                                // Ghi header
+                                for (int i = 0; i < dgvGiangVien.Columns.Count; i++)
+                                {
+                                    sw.Write(dgvGiangVien.Columns[i].HeaderText);
+                                    if (i < dgvGiangVien.Columns.Count - 1)
+                                        sw.Write(",");
+                                }
+                                sw.WriteLine();
+
+                                // Ghi dữ liệu
+                                for (int i = 0; i < dgvGiangVien.Rows.Count; i++)
+                                {
+                                    for (int j = 0; j < dgvGiangVien.Columns.Count; j++)
+                                    {
+                                        var value = dgvGiangVien.Rows[i].Cells[j].Value;
+
+                                        if (dgvGiangVien.Columns[j].Name == "NgaySinh" && value != null)
+                                        {
+                                            if (DateTime.TryParse(value.ToString(), out DateTime dateValue))
+                                                value = dateValue.ToString("dd/MM/yyyy");
+                                        }
+
+                                        string text = value?.ToString();
+
+                                        // Escape CSV: nếu có dấu phẩy hoặc xuống dòng thì bọc trong ""
+                                        if (!string.IsNullOrEmpty(text) && (text.Contains(",") || text.Contains("\n") || text.Contains("\"")))
+                                        {
+                                            text = "\"" + text.Replace("\"", "\"\"") + "\"";
+                                        }
+
+                                        // Xử lý số điện thoại: ép sang chuỗi, giữ nguyên 0 ở đầu
+                                        if (dgvGiangVien.Columns[j].Name == "SoDienThoai" && value != null)
+                                        {
+                                            value = "'" + value.ToString();
+                                            // thêm dấu nháy đơn để Excel hiểu là chuỗi, không cắt số 0
+                                        }
+
+                                        sw.Write(text);
+
+                                        if (j < dgvGiangVien.Columns.Count - 1)
+                                            sw.Write(",");
+                                    }
+                                    sw.WriteLine();
+                                }
+                            }
+
+                            MessageBox.Show("Xuất CSV thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Lỗi: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Không có dữ liệu để xuất!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private static string CsvEscape(string input)
+        {
+            if (input == null) return string.Empty;
+            bool mustQuote = input.Contains(",") || input.Contains("\"") || input.Contains("\r") || input.Contains("\n");
+            string escaped = input.Replace("\"", "\"\"");
+            return mustQuote ? "\"" + escaped + "\"" : escaped;
+        }
+
     }
 }

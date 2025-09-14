@@ -2,267 +2,246 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data.SqlClient;
 
 namespace QLSV_7.GUI
 {
+    /// <summary>
+    /// Form đăng nhập hệ thống
+    /// Xác thực người dùng và chuyển hướng đến form chính
+    /// </summary>
     public partial class DangNhap : Form
     {
-        private int loginAttempts = 0;
-        private const int maxLoginAttempts = 3;
-        private DateTime lastLoginAttempt = DateTime.MinValue;
+        /// <summary>
+        /// Chuỗi kết nối database SQL Server
+        /// Sử dụng Windows Authentication và mã hóa kết nối
+        /// </summary>
+        private string Nguon = @"Data Source=DESKTOP-5LSPDHV\SQLEXPRESS01;Initial Catalog=QLSV;Integrated Security=True;Encrypt=True;TrustServerCertificate=True";
         
+        /// <summary>
+        /// Khởi tạo form DangNhap
+        /// Thiết lập các thuộc tính mặc định cho các control
+        /// </summary>
         public DangNhap()
         {
             InitializeComponent();
-            SetupForm();
+            // Đảm bảo mật khẩu được ẩn mặc định
+            txtMatKhau.UseSystemPasswordChar = true;
+            txtMatKhau.PasswordChar = '*'; // Sử dụng dấu * để ẩn mật khẩu
+            cbHienThiMatKhau.Checked = false; // Đảm bảo checkbox không được tick
         }
 
-        string Nguon = @"Data Source=DESKTOP-5LSPDHV\SQLEXPRESS01;Initial Catalog=QLSV;Integrated Security=True";
-
-        private void SetupForm()
+        /// <summary>
+        /// Kiểm tra thông tin đăng nhập của người dùng
+        /// Truy vấn database để xác thực tên đăng nhập và mật khẩu
+        /// </summary>
+        /// <param name="tenDangNhap">Tên đăng nhập</param>
+        /// <param name="matKhau">Mật khẩu</param>
+        /// <returns>True nếu đăng nhập thành công, False nếu thất bại</returns>
+        private bool KiemTraDangNhap(string tenDangNhap, string matKhau)
         {
-            // Thiết lập form
-            this.FormBorderStyle = FormBorderStyle.None;
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            
-            // Thiết lập focus cho textbox đầu tiên
-            txtTenDangNhap.Focus();
-            
-            // Thiết lập placeholder text
-            SetPlaceholderText();
-        }
-
-        private void SetPlaceholderText()
-        {
-            // Thêm placeholder text cho các textbox
-            txtTenDangNhap.GotFocus += (s, e) => {
-                if (txtTenDangNhap.Text == "Nhập tên đăng nhập")
-                {
-                    txtTenDangNhap.Text = "";
-                    txtTenDangNhap.ForeColor = Color.Black;
-                }
-            };
-            
-            txtTenDangNhap.LostFocus += (s, e) => {
-                if (string.IsNullOrWhiteSpace(txtTenDangNhap.Text))
-                {
-                    txtTenDangNhap.Text = "Nhập tên đăng nhập";
-                    txtTenDangNhap.ForeColor = Color.Gray;
-                }
-            };
-            
-            txtMatKhau.GotFocus += (s, e) => {
-                if (txtMatKhau.Text == "Nhập mật khẩu")
-                {
-                    txtMatKhau.Text = "";
-                    txtMatKhau.ForeColor = Color.Black;
-                    txtMatKhau.PasswordChar = '●';
-                }
-            };
-            
-            txtMatKhau.LostFocus += (s, e) => {
-                if (string.IsNullOrWhiteSpace(txtMatKhau.Text))
-                {
-                    txtMatKhau.Text = "Nhập mật khẩu";
-                    txtMatKhau.ForeColor = Color.Gray;
-                    txtMatKhau.PasswordChar = '\0';
-                }
-            };
-            
-            // Thiết lập placeholder ban đầu
-            txtTenDangNhap.Text = "Nhập tên đăng nhập";
-            txtTenDangNhap.ForeColor = Color.Gray;
-            txtMatKhau.Text = "Nhập mật khẩu";
-            txtMatKhau.ForeColor = Color.Gray;
-            txtMatKhau.PasswordChar = '\0';
-        }
-
-        private void btnDangNhap_Click(object sender, EventArgs e)
-        {
-            // Kiểm tra thời gian chờ giữa các lần đăng nhập
-            if (loginAttempts >= maxLoginAttempts)
-            {
-                var timeSinceLastAttempt = DateTime.Now - lastLoginAttempt;
-                if (timeSinceLastAttempt.TotalMinutes < 5)
-                {
-                    var remainingTime = TimeSpan.FromMinutes(5) - timeSinceLastAttempt;
-                    MessageBox.Show($"Bạn đã đăng nhập sai quá nhiều lần. Vui lòng thử lại sau {remainingTime.Minutes} phút {remainingTime.Seconds} giây.", 
-                        "Tài khoản tạm khóa", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-                else
-                {
-                    loginAttempts = 0; // Reset sau 5 phút
-                }
-            }
-
-            string tenDangNhap = txtTenDangNhap.Text.Trim();
-            string matKhau = txtMatKhau.Text.Trim();
-
-            // Kiểm tra placeholder text
-            if (tenDangNhap == "Nhập tên đăng nhập" || string.IsNullOrWhiteSpace(tenDangNhap))
-            {
-                ShowErrorMessage("Vui lòng nhập tên đăng nhập!", txtTenDangNhap);
-                return;
-            }
-
-            if (matKhau == "Nhập mật khẩu" || string.IsNullOrWhiteSpace(matKhau))
-            {
-                ShowErrorMessage("Vui lòng nhập mật khẩu!", txtMatKhau);
-                return;
-            }
-
-            // Kiểm tra độ dài tên đăng nhập
-            if (tenDangNhap.Length < 3)
-            {
-                ShowErrorMessage("Tên đăng nhập phải có ít nhất 3 ký tự!", txtTenDangNhap);
-                return;
-            }
-
-            // Kiểm tra độ dài mật khẩu
-            if (matKhau.Length < 6)
-            {
-                ShowErrorMessage("Mật khẩu phải có ít nhất 6 ký tự!", txtMatKhau);
-                return;
-            }
-
             try
             {
-                using (var conn = new SqlConnection(Nguon))
-                using (var cmd = new SqlCommand("SELECT MaTK, TenDangNhap, MatKhau, VaiTro FROM TaiKhoan WHERE TenDangNhap = @TenDangNhap AND MatKhau = @MatKhau", conn))
+                using (SqlConnection connection = new SqlConnection(Nguon))
                 {
-                    cmd.Parameters.Add("@TenDangNhap", SqlDbType.NVarChar, 100).Value = tenDangNhap;
-                    cmd.Parameters.Add("@MatKhau", SqlDbType.NVarChar, 100).Value = matKhau;
+                    connection.Open();
+                    // Câu lệnh SQL kiểm tra tài khoản
+                    string query = "SELECT COUNT(*) FROM TaiKhoan WHERE TenDangNhap = @TenDangNhap AND MatKhau = @MatKhau";
                     
-                    conn.Open();
-                    using (var reader = cmd.ExecuteReader())
+                    using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        if (reader.Read())
-                        {
-                            string maTK = reader["MaTK"].ToString();
-                            string vaiTro = reader["VaiTro"].ToString();
-                            
-                            // Reset số lần đăng nhập sai
-                            loginAttempts = 0;
-                            
-                            // Hiển thị thông báo thành công
-                            ShowSuccessMessage($"Đăng nhập thành công!\nMã TK: {maTK}\nVai trò: {vaiTro}");
-                            
-                            // Mở form chính
-                            var trangChu = new TrangChu();
-                            this.Hide();
-                            trangChu.ShowDialog();
-                            this.Close();
-                        }
-                        else
-                        {
-                            HandleLoginFailure();
-                        }
+                        // Thêm tham số để tránh SQL Injection
+                        command.Parameters.AddWithValue("@TenDangNhap", tenDangNhap);
+                        command.Parameters.AddWithValue("@MatKhau", matKhau);
+                        
+                        int count = (int)command.ExecuteScalar();
+                        return count > 0; // Trả về true nếu tìm thấy tài khoản
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi kết nối cơ sở dữ liệu: " + ex.Message, 
-                    "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // Hiển thị thông báo lỗi nếu có lỗi kết nối database
+                MessageBox.Show("Lỗi kết nối database: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
         }
 
-        private void ShowErrorMessage(string message, Control focusControl)
+      
+      
+        /// <summary>
+        /// Lấy vai trò của người dùng từ database
+        /// </summary>
+        /// <param name="tenDangNhap">Tên đăng nhập</param>
+        /// <returns>Vai trò của người dùng, trả về chuỗi rỗng nếu không tìm thấy</returns>
+        private string LayVaiTro(string tenDangNhap)
         {
-            MessageBox.Show(message, "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            focusControl.Focus();
-            focusControl.SelectAll();
-        }
-
-        private void ShowSuccessMessage(string message)
-        {
-            MessageBox.Show(message, "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void HandleLoginFailure()
-        {
-            loginAttempts++;
-            lastLoginAttempt = DateTime.Now;
-            
-            string message = "Tên đăng nhập hoặc mật khẩu không đúng!";
-            
-            if (loginAttempts >= maxLoginAttempts)
+            try
             {
-                message += $"\n\nBạn đã đăng nhập sai {maxLoginAttempts} lần. Tài khoản sẽ bị khóa tạm thời trong 5 phút.";
+                using (SqlConnection connection = new SqlConnection(Nguon))
+                {
+                    connection.Open();
+                    // Câu lệnh SQL lấy vai trò
+                    string query = "SELECT VaiTro FROM TaiKhoan WHERE TenDangNhap = @TenDangNhap";
+                    
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@TenDangNhap", tenDangNhap);
+                        object result = command.ExecuteScalar();
+                        return result != null ? result.ToString() : ""; // Trả về vai trò hoặc chuỗi rỗng
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Hiển thị thông báo lỗi nếu có lỗi xảy ra
+                MessageBox.Show("Lỗi lấy thông tin vai trò: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return "";
+            }
+        }
+
+        /// <summary>
+        /// Xử lý sự kiện thay đổi trạng thái checkbox hiển thị mật khẩu
+        /// Cho phép người dùng hiển thị hoặc ẩn mật khẩu
+        /// </summary>
+        /// <param name="sender">CheckBox hiển thị mật khẩu</param>
+        /// <param name="e">Tham số sự kiện</param>
+        private void cbHienThiMatKhau_CheckedChanged(object sender, EventArgs e)
+        {
+            // Hiển thị hoặc ẩn mật khẩu dựa trên trạng thái checkbox
+            if (cbHienThiMatKhau.Checked)
+            {
+                txtMatKhau.UseSystemPasswordChar = false; // Hiển thị mật khẩu
+                txtMatKhau.PasswordChar = '\0'; // Xóa ký tự ẩn
             }
             else
             {
-                message += $"\n\nCòn lại {maxLoginAttempts - loginAttempts} lần thử.";
-            }
-            
-            MessageBox.Show(message, "Lỗi đăng nhập", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            
-            txtMatKhau.Clear();
-            txtMatKhau.Text = "Nhập mật khẩu";
-            txtMatKhau.ForeColor = Color.Gray;
-            txtMatKhau.PasswordChar = '\0';
-            txtMatKhau.Focus();
-        }
-
-        private void btnThoat_Click(object sender, EventArgs e)
-        {
-            var result = MessageBox.Show("Bạn có chắc muốn thoát chương trình?", 
-                "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            
-            if (result == DialogResult.Yes)
-            {
-                Application.Exit();
+                txtMatKhau.UseSystemPasswordChar = true; // Ẩn mật khẩu
+                txtMatKhau.PasswordChar = '*'; // Sử dụng dấu * để ẩn
             }
         }
 
-        private void txtTenDangNhap_KeyPress(object sender, KeyPressEventArgs e)
+        /// <summary>
+        /// Xử lý sự kiện click nút Đăng nhập
+        /// Thực hiện quá trình xác thực và đăng nhập vào hệ thống
+        /// </summary>
+        /// <param name="sender">Nút Đăng nhập</param>
+        /// <param name="e">Tham số sự kiện</param>
+        private void btnDangNhap_Click(object sender, EventArgs e)
         {
-            if (e.KeyChar == (char)Keys.Enter)
+            try
             {
-                // Xử lý placeholder text khi nhấn Enter
-                if (txtTenDangNhap.Text == "Nhập tên đăng nhập")
+                // Kiểm tra dữ liệu đầu vào - tên đăng nhập
+                if (string.IsNullOrWhiteSpace(txtTenDangNhap.Text))
                 {
-                    txtTenDangNhap.Text = "";
-                    txtTenDangNhap.ForeColor = Color.Black;
+                    MessageBox.Show("Vui lòng nhập tên đăng nhập!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtTenDangNhap.Focus();
+                    return;
                 }
-                txtMatKhau.Focus();
+
+                // Kiểm tra dữ liệu đầu vào - mật khẩu
+                if (string.IsNullOrWhiteSpace(txtMatKhau.Text))
+                {
+                    MessageBox.Show("Vui lòng nhập mật khẩu!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtMatKhau.Focus();
+                    return;
+                }
+
+                // Lấy thông tin đăng nhập và loại bỏ khoảng trắng
+                string tenDangNhap = txtTenDangNhap.Text.Trim();
+                string matKhau = txtMatKhau.Text.Trim();
+
+                // Kiểm tra thông tin đăng nhập
+                if (KiemTraDangNhap(tenDangNhap, matKhau))
+                {
+                    // Lấy vai trò của người dùng
+                    string vaiTro = LayVaiTro(tenDangNhap);
+                    
+                    // Thông báo đăng nhập thành công
+                    MessageBox.Show($"Đăng nhập thành công!\nVai trò: {vaiTro}", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    
+                    // Mở form chính (TrangChu) và ẩn form đăng nhập
+                    try
+                    {
+                        TrangChu trangChu = new TrangChu();
+                        trangChu.Show();
+                        this.Hide();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Lỗi khi mở trang chủ: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else
+                {
+                    // Thông báo lỗi đăng nhập và reset form
+                    MessageBox.Show("Tên đăng nhập hoặc mật khẩu không đúng!", "Lỗi đăng nhập", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtMatKhau.Clear();
+                    txtTenDangNhap.Focus();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Xử lý các lỗi không mong muốn
+                MessageBox.Show("Lỗi không mong muốn: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
+        /// <summary>
+        /// Xử lý sự kiện thay đổi text trong TextBox tên đăng nhập
+        /// Có thể thêm validation real-time ở đây nếu cần
+        /// </summary>
+        /// <param name="sender">TextBox tên đăng nhập</param>
+        /// <param name="e">Tham số sự kiện</param>
+        private void txtTenDangNhap_TextChanged(object sender, EventArgs e)
+        {
+            // Có thể thêm validation real-time ở đây nếu cần
+        }
+
+        /// <summary>
+        /// Xử lý sự kiện thay đổi text trong TextBox mật khẩu
+        /// Có thể thêm validation real-time ở đây nếu cần
+        /// </summary>
+        /// <param name="sender">TextBox mật khẩu</param>
+        /// <param name="e">Tham số sự kiện</param>
+        private void txtMatKhau_TextChanged(object sender, EventArgs e)
+        {
+            // Có thể thêm validation real-time ở đây nếu cần
+        }
+
+        /// <summary>
+        /// Xử lý sự kiện nhấn phím trong TextBox mật khẩu
+        /// Cho phép đăng nhập bằng phím Enter
+        /// </summary>
+        /// <param name="sender">TextBox mật khẩu</param>
+        /// <param name="e">Tham số sự kiện phím</param>
         private void txtMatKhau_KeyPress(object sender, KeyPressEventArgs e)
         {
+            // Nếu nhấn phím Enter thì thực hiện đăng nhập
             if (e.KeyChar == (char)Keys.Enter)
             {
-                // Xử lý placeholder text khi nhấn Enter
-                if (txtMatKhau.Text == "Nhập mật khẩu")
-                {
-                    txtMatKhau.Text = "";
-                    txtMatKhau.ForeColor = Color.Black;
-                    txtMatKhau.PasswordChar = '●';
-                }
                 btnDangNhap_Click(sender, e);
             }
         }
 
-        // Xử lý sự kiện quên mật khẩu
-        private void lblForgotPassword_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        /// <summary>
+        /// Xử lý sự kiện nhấn phím trong TextBox tên đăng nhập
+        /// Chuyển focus đến TextBox mật khẩu khi nhấn Enter
+        /// </summary>
+        /// <param name="sender">TextBox tên đăng nhập</param>
+        /// <param name="e">Tham số sự kiện phím</param>
+        private void txtTenDangNhap_KeyPress(object sender, KeyPressEventArgs e)
         {
-            MessageBox.Show("Vui lòng liên hệ quản trị viên để được hỗ trợ đặt lại mật khẩu.\n\nEmail: admin@qlsv.edu.vn\nĐiện thoại: 0123-456-789", 
-                "Quên mật khẩu", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void lblWelcome_Click(object sender, EventArgs e)
-        {
-
+            // Nếu nhấn phím Enter thì chuyển focus đến TextBox mật khẩu
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                txtMatKhau.Focus();
+            }
         }
     }
 }

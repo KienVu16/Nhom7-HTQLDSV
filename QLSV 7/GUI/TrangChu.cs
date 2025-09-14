@@ -88,5 +88,43 @@ namespace QLSV_7.GUI
         {
             OpenChild<TaiKhoan>();
         }
+
+        private void tìmKiếmToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenChild<TimKiem>();
+        }
+
+        private void quảnLýTàiKhoảnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Có thể thêm logic xử lý khi click vào menu quản lý tài khoản
+            // Hiện tại chỉ mở form quản lý tài khoản
+            OpenChild<TaiKhoan>();
+        }
+
+        
+
+
+        private void quảnLýTàiKhoảnToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void thêmTàiKhoảnToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            OpenChild<TaiKhoan>();
+        }
+
+        private void đăngXuấtToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DangNhap dn = new DangNhap();
+            dn.Show();
+            this.Close();
+        }
+
+        private void TrangChu_Load(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Maximized;
+        }
+
     }
 }

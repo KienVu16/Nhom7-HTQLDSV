@@ -205,53 +205,7 @@ namespace QLSV_7.GUI
             }
         }
 
-        private void btnXuatFile_Click(object sender, EventArgs e)
-        {
-            if (dgvMonHoc.Rows.Count == 0)
-            {
-                MessageBox.Show("Không có dữ liệu để xuất.");
-                return;
-            }
-
-            using (var sfd = new SaveFileDialog())
-            {
-                sfd.Title = "Xuất dữ liệu môn học";
-                sfd.Filter = "CSV (Excel)|*.csv";
-                sfd.FileName = "MonHoc.csv";
-                if (sfd.ShowDialog() != DialogResult.OK) return;
-
-                try
-                {
-                    var sb = new StringBuilder();
-                    for (int c = 0; c < dgvMonHoc.Columns.Count; c++)
-                    {
-                        if (c > 0) sb.Append(',');
-                        sb.Append(EscapeCsv(dgvMonHoc.Columns[c].HeaderText));
-                    }
-                    sb.AppendLine();
-
-                    foreach (DataGridViewRow row in dgvMonHoc.Rows)
-                    {
-                        if (row.IsNewRow) continue;
-                        for (int c = 0; c < dgvMonHoc.Columns.Count; c++)
-                        {
-                            if (c > 0) sb.Append(',');
-                            var value = row.Cells[c].Value?.ToString() ?? string.Empty;
-                            sb.Append(EscapeCsv(value));
-                        }
-                        sb.AppendLine();
-                    }
-
-                    File.WriteAllText(sfd.FileName, sb.ToString(), new UTF8Encoding(true));
-                    MessageBox.Show("Xuất file thành công!");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Lỗi khi xuất file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-        }
-
+       
         private void btnThoat_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -312,9 +266,9 @@ namespace QLSV_7.GUI
 
         private void quảnLýĐiểmToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            BangDiem d = new BangDiem();
+            BangDiem bd = new BangDiem();
             this.Hide();
-            d.ShowDialog(); 
+            bd.ShowDialog(); 
             this.Show();
         }
 
@@ -390,6 +344,83 @@ namespace QLSV_7.GUI
         private void đăngXuấtToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnXuatFile_Click(object sender, EventArgs e)
+        {
+            if (dgvMonHoc.Rows.Count > 0)
+            {
+                using (SaveFileDialog sfd = new SaveFileDialog() { Filter = "CSV file|*.csv" })
+                {
+                    if (sfd.ShowDialog() == DialogResult.OK)
+                    {
+                        try
+                        {
+                            using (StreamWriter sw = new StreamWriter(sfd.FileName, false, Encoding.UTF8))
+                            {
+                                // ===== Thêm tiêu đề =====
+                                sw.WriteLine("DANH SÁCH SINH VIÊN");
+
+                                // Ghi header
+                                for (int i = 0; i < dgvMonHoc.Columns.Count; i++)
+                                {
+                                    sw.Write(dgvMonHoc.Columns[i].HeaderText);
+                                    if (i < dgvMonHoc.Columns.Count - 1)
+                                        sw.Write(",");
+                                }
+                                sw.WriteLine();
+
+                                // Ghi dữ liệu
+                                for (int i = 0; i < dgvMonHoc.Rows.Count; i++)
+                                {
+                                    for (int j = 0; j < dgvMonHoc.Columns.Count; j++)
+                                    {
+                                        var value = dgvMonHoc.Rows[i].Cells[j].Value;
+
+                                        if (dgvMonHoc.Columns[j].Name == "NgaySinh" && value != null)
+                                        {
+                                            if (DateTime.TryParse(value.ToString(), out DateTime dateValue))
+                                                value = dateValue.ToString("dd/MM/yyyy");
+                                        }
+
+                                        string text = value?.ToString();
+
+                                        // Escape CSV: nếu có dấu phẩy hoặc xuống dòng thì bọc trong ""
+                                        if (!string.IsNullOrEmpty(text) && (text.Contains(",") || text.Contains("\n") || text.Contains("\"")))
+                                        {
+                                            text = "\"" + text.Replace("\"", "\"\"") + "\"";
+                                        }
+
+                                        sw.Write(text);
+
+                                        if (j < dgvMonHoc.Columns.Count - 1)
+                                            sw.Write(",");
+                                    }
+                                    sw.WriteLine();
+                                }
+                            }
+
+                            MessageBox.Show("Xuất CSV thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Lỗi: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Không có dữ liệu để xuất!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private static string CsvEscape(string input)
+        {
+            if (input == null) return string.Empty;
+            bool mustQuote = input.Contains(",") || input.Contains("\"") || input.Contains("\r") || input.Contains("\n");
+            string escaped = input.Replace("\"", "\"\"");
+            return mustQuote ? "\"" + escaped + "\"" : escaped;
         }
     }
 }

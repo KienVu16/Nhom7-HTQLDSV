@@ -7,7 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Data.SqlClient;    
+using System.Data.SqlClient;
+using ClosedXML.Excel;
 using System.IO;
 
 namespace QLSV_7.GUI
@@ -28,10 +29,6 @@ namespace QLSV_7.GUI
 
         }
 
-        private void tableLayoutPanel3_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
 
         private void SinhVien_Load(object sender, EventArgs e)
         {
@@ -370,66 +367,84 @@ namespace QLSV_7.GUI
 
         private void btnXuatFile_Click(object sender, EventArgs e)
         {
-            int dataRowCount = dgvSinhVien.Rows.Cast<DataGridViewRow>().Count(r => !r.IsNewRow);
-            if (dataRowCount == 0)
+            if (dgvSinhVien.Rows.Count == 0)
             {
-                MessageBox.Show("Không có dữ liệu để xuất.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Không có dữ liệu để xuất!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            using (var sfd = new SaveFileDialog())
+            using (SaveFileDialog sfd = new SaveFileDialog() { Filter = "CSV file|*.csv" })
             {
-                sfd.Title = "Xuất CSV";
-                sfd.Filter = "CSV file (*.csv)|*.csv|All files (*.*)|*.*";
-                sfd.FileName = "SinhVien.csv";
-                if (sfd.ShowDialog() != DialogResult.OK) return;
-
-                try
+                if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    var sb = new StringBuilder();
-
-                    // Header
-                    for (int c = 0; c < dgvSinhVien.Columns.Count; c++)
+                    try
                     {
-                        if (!dgvSinhVien.Columns[c].Visible) continue;
-                        sb.Append(CsvEscape(dgvSinhVien.Columns[c].HeaderText));
-                        sb.Append(c == dgvSinhVien.Columns.Count - 1 ? "" : ",");
-                    }
-                    sb.AppendLine();
-
-                    // Rows
-                    foreach (DataGridViewRow row in dgvSinhVien.Rows)
-                    {
-                        if (row.IsNewRow) continue;
-                        for (int c = 0; c < dgvSinhVien.Columns.Count; c++)
+                        using (StreamWriter sw = new StreamWriter(sfd.FileName, false, new UTF8Encoding(true)))
                         {
-                            if (!dgvSinhVien.Columns[c].Visible) continue;
-                            var value = row.Cells[c].Value?.ToString() ?? string.Empty;
-                            sb.Append(CsvEscape(value));
-                            sb.Append(c == dgvSinhVien.Columns.Count - 1 ? "" : ",");
-                        }
-                        sb.AppendLine();
-                    }
+                            // ===== Tiêu đề =====
+                            sw.WriteLine("DANH SÁCH SINH VIÊN");
+                            sw.WriteLine();
 
-                    var utf8Bom = new UTF8Encoding(true);
-                    File.WriteAllText(sfd.FileName, sb.ToString(), utf8Bom);
-                    MessageBox.Show("Xuất file CSV thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Lỗi khi xuất file: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            // ===== Header =====
+                            for (int i = 0; i < dgvSinhVien.Columns.Count; i++)
+                            {
+                                sw.Write(EscapeCsv(dgvSinhVien.Columns[i].HeaderText));
+                                if (i < dgvSinhVien.Columns.Count - 1) sw.Write(",");
+                            }
+                            sw.WriteLine();
+
+                            // ===== Dữ liệu =====
+                            foreach (DataGridViewRow row in dgvSinhVien.Rows)
+                            {
+                                if (row.IsNewRow) continue; // bỏ qua dòng trống cuối
+
+                                for (int j = 0; j < dgvSinhVien.Columns.Count; j++)
+                                {
+                                    var value = row.Cells[j].Value;
+
+                                    // Xử lý ngày sinh
+                                    if (dgvSinhVien.Columns[j].Name == "NgaySinh" && value != null &&
+                                        DateTime.TryParse(value.ToString(), out DateTime dateValue))
+                                    {
+                                        value = dateValue.ToString("dd/MM/yyyy");
+                                    }
+
+                                    // Xử lý số điện thoại: ép sang chuỗi, giữ nguyên 0 ở đầu
+                                    if (dgvSinhVien.Columns[j].Name == "SoDienThoai" && value != null)
+                                    {
+                                        value = "'" + value.ToString();
+                                        // thêm dấu nháy đơn để Excel hiểu là chuỗi, không cắt số 0
+                                    }
+
+                                    string text = value?.ToString() ?? "";
+                                    sw.Write(EscapeCsv(text));
+                                    if (j < dgvSinhVien.Columns.Count - 1) sw.Write(",");
+                                }
+                                sw.WriteLine();
+                            }
+                        }
+
+                        MessageBox.Show("Xuất CSV thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Lỗi: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
 
-        private static string CsvEscape(string input)
+        /// <summary>
+        /// Escape dữ liệu CSV theo chuẩn RFC4180
+        /// </summary>
+        private string EscapeCsv(string text)
         {
-            if (input == null) return string.Empty;
-            bool mustQuote = input.Contains(",") || input.Contains("\"") || input.Contains("\r") || input.Contains("\n");
-            string escaped = input.Replace("\"", "\"\"");
-            return mustQuote ? "\"" + escaped + "\"" : escaped;
+            if (string.IsNullOrEmpty(text)) return "";
+            if (text.Contains(",") || text.Contains("\n") || text.Contains("\""))
+                return "\"" + text.Replace("\"", "\"\"") + "\"";
+            return text;
         }
- 
+
         private void btnThoat_Click(object sender, EventArgs e)
         {
             
@@ -504,39 +519,6 @@ namespace QLSV_7.GUI
             }
         }
 
-        private void quảnLýGiáoViênToolStripMenuItem_Click(object sender, EventArgs e)
-        {
 
-        }
-
-        private void quảnLýSinhViênToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void quảnLýMônHọcToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void quảnLýĐiểmToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void quảnLýĐăngKýHọcToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void toolStripMenuItem6_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void đăngXuấtToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }
